@@ -57,7 +57,7 @@ Simple example with one master and some additional check plugins
 License
 -------
 
-BSD
+GNU General Public License v2.0
 
 Author Information
 ------------------
