@@ -1,0 +1,23 @@
+- apt:
+    name: gpg
+    state: present
+
+- apt_key:
+    url: https://packages.icinga.com/icinga.key
+
+- apt_repository:
+    repo: "deb http://packages.icinga.com/debian icinga-{{ ansible_distribution_release }} main"
+    state: present
+    filename: icinga
+
+- name: Install Icinga 2
+  apt:
+    name:
+      - icinga2
+  notify:
+    - restart icinga2
+
+- name: Install check plugins
+  apt:
+    name:
+      - monitoring-plugins-basic

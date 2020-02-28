@@ -1,0 +1,7 @@
+- copy:
+    src: "{{ item }}"
+    dest: "{{ icinga2_plugin_dir }}"
+    owner: "{{ icinga2_user }}"
+    group: "{{ icinga2_group }}"
+    mode: 0755
+  loop: "{{ icinga2_plugins }}"

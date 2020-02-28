@@ -1,0 +1,4 @@
+---
+icinga2_user: icinga
+icinga2_group: icinga
+icinga2_plugin_dir: /usr/lib64/nagios/plugins

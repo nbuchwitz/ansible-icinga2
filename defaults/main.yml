@@ -1,0 +1,17 @@
+---
+icinga2_rebuild_certificates: no
+icinga2_accept_commands: yes
+icinga2_accept_config: yes
+icinga2_disable_confd: yes
+icinga2_global_zones: []
+icinga2_pki_path: /var/lib/icinga2/certs
+icinga2_setup: yes
+icinga2_cn: "{{ inventory_hostname }}"
+icinga2_zone: "{{ inventory_hostname }}"
+icinga2_endpoint:
+    name: "{{ icinga2_master }}"
+    host: "{{ icinga2_master }}"
+icinga2_parent_host: "{{ icinga2_master }}"
+icinga2_parent_zone: "master"
+
+icinga2_plugins: []

@@ -1,0 +1,26 @@
+- name: Install epel repository
+  yum:
+    name: epel-release
+
+- name: Install icinga repository
+  yum:
+    name: "https://packages.icinga.com/epel/icinga-rpm-release-{{ ansible_distribution_major_version }}-latest.noarch.rpm"
+
+- name: Install Icinga 2
+  yum:
+    name:
+      - icinga2
+  notify:
+    - restart icinga2
+
+- name: Install check plugins
+  yum:
+    name:
+      - nagios-plugins-disk
+      - nagios-plugins-load
+      - nagios-plugins-ping
+      - nagios-plugins-procs
+      - nagios-plugins-ssh
+      - nagios-plugins-swap
+      - nagios-plugins-tcp
+      - nagios-plugins-users

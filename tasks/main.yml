@@ -1,0 +1,71 @@
+---
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "{{ lookup('first_found', setup_tasks) }}"
+  vars:
+    setup_tasks:
+      - "setup-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+      - "setup-{{ ansible_distribution }}.yml"
+      - "setup-{{ ansible_os_family }}.yml"
+  when: icinga2_setup
+
+- include: plugins.yml
+  when: icinga2_plugins is defined
+
+- name: Create pki dir
+  file:
+    path: "{{ icinga2_pki_path }}"
+    owner: "{{ icinga2_user }}"
+    group: "{{ icinga2_group }}"
+    state: directory
+    mode: 0700
+
+- name: Remove existing certificates
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ icinga2_pki_path }}/trusted-master.crt"
+    - "{{ icinga2_pki_path }}/{{ icinga2_cn }}.key"
+    - "{{ icinga2_pki_path }}/{{ icinga2_cn }}.crt"
+  when: icinga2_rebuild_certificates
+
+- name: Fetch ticket from master
+  shell: |
+    icinga2 pki ticket --cn {{ icinga2_cn }}
+  register: icinga2_ticket
+  delegate_to: "{{ icinga2_master }}"
+  changed_when: false
+
+- name: Fetch trusted master certificate
+  shell: |
+    icinga2 pki save-cert --trustedcert {{ icinga2_pki_path }}/trusted-master.crt --host {{ icinga2_parent_host }}
+  args:
+    creates: "{{ icinga2_pki_path }}/trusted-master.crt"
+
+- set_fact:
+    endpoint: "{{ icinga2_endpoint['name'] }},{{ icinga2_endpoint['host'] }},{{ icinga2_endpoint['port'] | default(5665) }}"
+  when: icinga2_endpoint.name is defined and icinga2_endpoint.host is defined
+
+- name: Run node setup
+  shell: |
+    icinga2 node setup --ticket {{ icinga2_ticket.stdout_lines[0] }} \
+     --cn {{ icinga2_cn }} \
+     --zone {{ icinga2_zone }} \
+    --endpoint {{ endpoint | default(icinga2_endpoint) }} \
+    --parent_host {{ icinga2_parent_host }} \
+    --parent_zone {{ icinga2_parent_zone }} \
+    --trustedcert {{ icinga2_pki_path }}/trusted-master.crt \
+    {{ '--accept-config' if icinga2_accept_config }} \
+    {{ '--accept-commands' if icinga2_accept_commands }} \
+    {{ '--disable-confd' if icinga2_disable_confd }} \
+    {% for zone in icinga2_global_zones | default([])  %}--global_zones {{ zone }}{% endfor %}
+  args:
+    creates: "{{ icinga2_pki_path }}/{{ icinga2_cn }}.crt"
+  notify: restart icinga2
+
+- name: Ensure that Icinga2 is enabled and running
+  service:
+    name: icinga2
+    enabled: true
+    state: started
