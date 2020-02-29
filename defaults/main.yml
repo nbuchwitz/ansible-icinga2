@@ -1,17 +1,41 @@
 ---
+# remove existing certificates and create new ones
 icinga2_rebuild_certificates: no
+
+# accept commands from master
 icinga2_accept_commands: yes
+
+# accept config from master
 icinga2_accept_config: yes
+
+# disable default config
 icinga2_disable_confd: yes
+
+# additional global zones
 icinga2_global_zones: []
+
+# alternative pki path
 icinga2_pki_path: /var/lib/icinga2/certs
+
+# setup official repositories and install Icinga packages
 icinga2_setup: yes
+
+# Icinga host name
 icinga2_cn: "{{ inventory_hostname }}"
+
+# Icinga host zone
 icinga2_zone: "{{ inventory_hostname }}"
+
+# parent host for auto-signing the CSR
+icinga2_parent_host: "{{ icinga2_master }}"
+
+# parent zone
+icinga2_parent_zone: "master"
+
+# connect to remote endpoint
 icinga2_endpoint:
     name: "{{ icinga2_master }}"
     host: "{{ icinga2_master }}"
-icinga2_parent_host: "{{ icinga2_master }}"
-icinga2_parent_zone: "master"
 
+# list of additional monitoring plugins
 icinga2_plugins: []
