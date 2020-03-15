@@ -34,7 +34,7 @@
   shell: |
     icinga2 pki ticket --cn {{ icinga2_cn }}
   register: icinga2_ticket
-  delegate_to: "{{ icinga2_master }}"
+  delegate_to: "{{ icinga2_master_delegate }}"
   changed_when: false
 
 - name: Fetch trusted master certificate

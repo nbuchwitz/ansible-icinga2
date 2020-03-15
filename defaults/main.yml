@@ -39,3 +39,6 @@ icinga2_endpoint:
 
 # list of additional monitoring plugins
 icinga2_plugins: []
+
+# delegate_to host for generating ticket
+icinga2_master_delegate: "{{ icinga2_master }}"
