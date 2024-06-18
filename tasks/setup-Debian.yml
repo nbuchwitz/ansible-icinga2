@@ -1,12 +1,16 @@
-- apt:
+- name: Install gpg
+  apt:
     name: gpg
     state: present
 
-- apt_key:
+- name: Install Icinga key
+  get_url:
     url: https://packages.icinga.com/icinga.key
+    dest: /usr/share/keyrings/icinga-archive-keyring.asc
 
-- apt_repository:
-    repo: "deb http://packages.icinga.com/debian icinga-{{ ansible_distribution_release }} main"
+- name: Add Icinga apt repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/icinga-archive-keyring.asc] http://packages.icinga.com/debian icinga-{{ ansible_distribution_release }} main"
     state: present
     filename: icinga
 
