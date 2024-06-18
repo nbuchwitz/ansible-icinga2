@@ -1,7 +1,7 @@
 ---
 - include_vars: "{{ ansible_os_family }}.yml"
 
-- include: "{{ lookup('first_found', setup_tasks) }}"
+- include_tasks: "{{ lookup('first_found', setup_tasks) }}"
   vars:
     setup_tasks:
       - "setup-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
@@ -9,7 +9,7 @@
       - "setup-{{ ansible_os_family }}.yml"
   when: icinga2_setup
 
-- include: plugins.yml
+- include_tasks: plugins.yml
   when: icinga2_plugins is defined
 
 - name: Create pki dir
