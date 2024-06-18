@@ -3,15 +3,16 @@
     name: gpg
     state: present
 
-- name: Remove Icinga key in /etc/apt/trusted.gpg
-  apt_key:
-    id: F51A91A5EE001AA5D77D53C4C6E319C334410682
-    state: absent
-
 - name: Install Icinga key
   get_url:
     url: https://packages.icinga.com/icinga.key
     dest: /usr/share/keyrings/icinga-archive-keyring.asc
+
+- name: Add Icinga apt repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/icinga-archive-keyring.asc] http://packages.icinga.com/debian icinga-{{ ansible_distribution_release }} main"
+    state: present
+    filename: icinga
 
 - name: Remove old apt repository definition
   apt_repository:
@@ -19,11 +20,10 @@
     state: absent
     filename: icinga
 
-- name: Add Icinga apt repository
-  apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/icinga-archive-keyring.asc] http://packages.icinga.com/debian icinga-{{ ansible_distribution_release }} main"
-    state: present
-    filename: icinga
+- name: Remove Icinga key in /etc/apt/trusted.gpg
+  apt_key:
+    id: F51A91A5EE001AA5D77D53C4C6E319C334410682
+    state: absent
 
 - name: Install Icinga 2
   apt:
